@@ -86,6 +86,7 @@ def detect_video(
     out_dir: Optional[Union[str, Path]] = None,
     run_name: Optional[str] = None,
     progress: Optional[bool] = None,
+    display: Optional[bool] = None,
 ) -> DetectResult:
     """
     Run detection on a video and return a DetectResult.
@@ -116,7 +117,7 @@ def detect_video(
     # --- ArtifactOptions is the canonical internal representation ---
     # By default, nothing is saved unless explicitly requested.
     convenience_used = any(
-        x is not None for x in (save_json, save_frames, save_video, out_dir, run_name, progress)
+        x is not None for x in (save_json, save_frames, save_video, out_dir, run_name, progress, display)
     )
     if artifacts is not None and convenience_used:
         raise TypeError(
@@ -145,6 +146,8 @@ def detect_video(
             artifacts.run_name = str(run_name)
         if progress is not None:
             artifacts.progress = bool(progress)
+        if display is not None:
+            artifacts.display = bool(display)
 
     src_path = Path(video)
     if not src_path.exists():

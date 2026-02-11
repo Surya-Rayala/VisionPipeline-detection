@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "detect-lib"
-version = "0.1.5"
+version = "0.1.6"
 description = "A modular video object detection toolkit with a clean det-v1 JSON schema, pluggable backends, and optional model export."
 readme = "README.md"
 

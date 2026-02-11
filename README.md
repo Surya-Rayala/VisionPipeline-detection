@@ -162,6 +162,33 @@ You can use `detect` as a library after installing `detect-lib` with pip.
 python -c "import detect; print(detect.available_detectors())"
 ```
 
+### Python API reference (keywords)
+
+#### `detect.detect_video(...)`
+
+**Required**
+- `video` (`str | Path`): input video path.
+- `detector` (`str`): detector name (e.g. `yolo_bbox`, `yolo_pose`, `yolo_seg`).
+- `weights` (`str | Path`): registry key, local weights path, or URL.
+
+**Common options**
+- `classes` (`list[int] | None`): restrict to specific class ids.
+- `conf_thresh` (`float`): confidence threshold (default `0.25`).
+- `imgsz` (`int`): inference image size (default `640`).
+- `device` (`str`): device selector (e.g. `auto`, `cpu`, `mps`, `0`).
+- `half` (`bool`): enable FP16 inference where supported.
+
+**Artifacts (all off by default)**
+- `save_json` (`bool`): save `detections.json`.
+- `save_frames` (`bool`): save extracted frames under `frames/`.
+- `save_video` (`str | None`): filename for annotated video (e.g. `"annotated.mp4"`).
+- `out_dir` (`str | Path`): output root (used only if saving artifacts; default `out`).
+- `run_name` (`str | None`): run folder name under `out_dir`.
+- `progress` (`bool`): enable/disable progress bar.
+- `display` (`bool`): show live window (press `q` to quit).
+
+Returns a `DetectResult` with `payload` (det-v1 JSON) and `paths` (only populated when saving).
+
 ### Run detection from a Python file
 
 Create `run_detect.py`:
@@ -189,6 +216,30 @@ python run_detect.py
 ### Run model export from a Python file
 
 > Requires export extras based on the type of export needed (e.g., `pip install "detect-lib[export]"`).
+
+#### `detect.export_model(...)`
+
+**Required**
+- `weights` (`str | Path`): registry key, local weights path, or URL (**must be a `.pt` PyTorch model** for export).
+
+**Common options**
+- `formats` (`list[str] | str`): formats to export (default `"onnx"`).
+- `imgsz` (`int | tuple[int,int]`): export image size (default `640`).
+- `device` (`str | None`): export device (e.g. `"cpu"`, `"mps"`, `"0"`).
+- `half` (`bool`): FP16 export where supported.
+- `int8` (`bool`): INT8 export (format/toolchain-dependent).
+- `data` (`str | None`): dataset YAML for INT8 calibration (when required).
+- `fraction` (`float`): fraction of dataset for calibration (default `1.0`).
+- `dynamic` (`bool`): dynamic shapes where supported.
+- `batch` (`int`): export batch size (default `1`).
+- `opset` (`int | None`): ONNX opset (ONNX only).
+- `simplify` (`bool`): simplify ONNX graph (ONNX only).
+- `workspace` (`int | None`): TensorRT workspace (GB) (TensorRT only).
+- `nms` (`bool`): add NMS where supported.
+- `out_dir` (`str | Path`): output root (default `models/exports`).
+- `run_name` (`str | None`): export run folder name under `out_dir`.
+
+Returns a dict with `run_dir`, `artifacts` (paths), and `meta_path`.
 
 Create `run_export.py`:
 
