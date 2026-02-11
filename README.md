@@ -260,10 +260,27 @@ uv run python -m detect.cli.export_model \
   --out-dir models/exports --run-name y26_trt
 ```
 
-Run / sanity-check the exported engine (Ultralytics predict):
+Run / sanity-check the exported engine using this package (produces det-v1 output):
 
 ```bash
-uv run python -c "from ultralytics import YOLO; m=YOLO('models/exports/y26_trt/yolo26n.engine'); r=m.predict(source='in.mp4', device=0, verbose=False); print('OK', len(r))"
+uv run python -m detect.cli.detect_video \
+  --video in.mp4 \
+  --detector yolo_bbox \
+  --weights models/exports/y26_trt/yolo26n.engine \
+  --device 0
+```
+
+Optionally save artifacts (JSON + annotated video):
+
+```bash
+uv run python -m detect.cli.detect_video \
+  --video in.mp4 \
+  --detector yolo_bbox \
+  --weights models/exports/y26_trt/yolo26n.engine \
+  --device 0 \
+  --json \
+  --save-video annotated_engine.mp4 \
+  --out-dir out --run-name y26_trt_check
 ```
 
 ---
