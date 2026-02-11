@@ -1,0 +1,32 @@
+[project]
+name = "detect"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "tqdm>=4.67.3",
+    "ultralytics>=8.4.14",
+]
+
+[project.optional-dependencies]
+export = [
+    "onnx>=1.20.1",
+    "onnxruntime>=1.24.1",
+]
+tf = [
+    "tensorflow>=2.20.0",
+]
+openvino = [
+    "openvino>=2025.4.1",
+]
+coreml = [
+    "coremltools>=9.0",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "ruff>=0.15.0",
+]
