@@ -1,51 +1,51 @@
-⸻
+# detect
 
-detect
-
-A modular video object detection toolkit with a clean det-v1 JSON schema, pluggable backends, and optional model export.
+A modular **video object detection** toolkit with a clean **det-v1** JSON schema, pluggable backends, and optional model export.
 
 Current backend:
-	•	Ultralytics YOLO (bbox / pose / segmentation)
+- **Ultralytics YOLO** (bbox / pose / segmentation)
 
 Architecture highlights:
-	•	backend/plugin registry (detect.backends)
-	•	model registry + weight resolver (detect.registry)
-	•	stable det-v1 schema (detect.core.schema)
-	•	optional exporters (today: Ultralytics export)
+- backend/plugin registry (`detect.backends`)
+- model registry + weight resolver (`detect.registry`)
+- stable det-v1 schema (`detect.core.schema`)
+- optional exporters (today: Ultralytics export)
 
-By default, detect does not write any files. You opt-in to saving JSON, frames, or annotated video via flags.
+> By default, `detect` **does not write any files**. You opt-in to saving JSON, frames, or annotated video via flags.
 
-⸻
+---
 
-Features
-	•	Detect videos → det-v1 JSON (always returned in-memory; optionally saved)
-	•	Optional artifacts
-	•	--json → save detections.json
-	•	--frames → save extracted frames
-	•	--save-video <name.mp4> → save annotated video
-	•	YOLO tasks
-	•	yolo_bbox (boxes)
-	•	yolo_pose (boxes + keypoints)
-	•	yolo_seg (boxes + polygons)
-	•	Model registry keys
-	•	pass --weights yolo26n / yolo26n-seg / yolo26n-pose (or a local path / URL)
-	•	Exports
-	•	export to formats like onnx, engine, tflite, openvino, coreml, etc (depending on toolchain)
+## Features
 
-⸻
+- **Detect videos → det-v1 JSON** (always returned in-memory; optionally saved)
+- **Optional artifacts**
+  - `--json` → save `detections.json`
+  - `--frames` → save extracted frames
+  - `--save-video <name.mp4>` → save annotated video
+- **YOLO tasks**
+  - `yolo_bbox` (boxes)
+  - `yolo_pose` (boxes + keypoints)
+  - `yolo_seg` (boxes + polygons)
+- **Model registry keys**
+  - pass `--weights yolo26n` / `yolo26n-seg` / `yolo26n-pose` (or a local path / URL)
+- **Exports**
+  - export to formats like `onnx`, `engine`, `tflite`, `openvino`, `coreml`, etc (depending on toolchain)
 
-Recommended environment (Python 3.11+)
+---
 
-This project targets Python 3.11+.
+## Recommended environment (Python 3.11+)
 
-⸻
+This project targets **Python 3.11+**.
 
-Install with pip (PyPI)
+---
 
-Use this if you want to install and use the tool without cloning the repo.
+## Install with `pip` (PyPI)
 
-Install (base detection)
+> Use this if you want to install and use the tool without cloning the repo.
 
+### Install (base detection)
+
+```bash
 pip install detect
 
 Optional installs (pip extras)
@@ -114,7 +114,9 @@ python -m detect.cli.detect_video \
 
 Export CLI (pip)
 
-Requires export extras: pip install "detect[export]"
+Requires export extras:
+
+pip install "detect[export]"
 
 Export ONNX:
 
@@ -245,7 +247,9 @@ uv run python -m detect.cli.detect_video \
 
 Export CLI (uv)
 
-Requires: uv sync --extra export
+Requires:
+
+uv sync --extra export
 
 Export ONNX:
 
@@ -294,10 +298,10 @@ Required
 	•	--weights <id|path|url>: Registry key, local weights path, or URL to weights.
 
 Detection options
-	•	--classes <ids>: Filter to specific class IDs (comma/semicolon-separated), or omit for all.
+	•	--classes <ids>: Filter to specific class IDs (comma/semicolon-separated), or omit for all classes.
 	•	--conf-thresh <float>: Confidence threshold for detections (default 0.25).
 	•	--imgsz <int>: Inference image size used by the backend (default 640).
-	•	--device <str>: Device selector (e.g., auto, cpu, mps, 0, 0,1).
+	•	--device <str>: Device selector (e.g., auto, cpu, mps, 0).
 	•	--half: Enable FP16 inference where supported.
 
 Artifact saving (opt-in)
@@ -315,7 +319,7 @@ Model registry / downloads
 	•	--no-download: Disable automatic download for registry keys/URLs.
 
 Misc
-	•	--no-progress: Disable progress bar.
+	•	--no-progress: Disable progress bar output.
 	•	--list-models: Print registry + installed models then exit.
 
 ⸻
@@ -356,5 +360,3 @@ Misc
 License
 
 MIT License. See LICENSE.
-
-⸻
