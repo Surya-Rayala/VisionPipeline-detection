@@ -30,6 +30,7 @@ from .schema import (
     FrameRecord,
     VideoMeta,
     DetectorConfig,
+    PromptSpec,
     frame_file_name,
 )
 from .artifacts import ArtifactOptions, DetectResult, compute_run_dirs
@@ -76,6 +77,9 @@ def detect_video(
     imgsz: int = 640,
     device: str = "auto",
     half: bool = False,
+    task: str = "auto",
+    prompts: Optional[PromptSpec] = None,
+    topk: Optional[int] = None,
     models_dir: Union[str, Path] = "models",
     download_models: bool = True,
     artifacts: Optional[ArtifactOptions] = None,
@@ -99,6 +103,7 @@ def detect_video(
       - save_frames: write frames/*.jpg
       - save_video: write annotated video
       - display: show live window (press 'q' to quit early)
+      - task/prompts/topk control detector behavior for promptable/open-vocab/classify tasks.
 
     If no artifacts are requested, no directories are created.
 
@@ -168,6 +173,9 @@ def detect_video(
         imgsz=imgsz,
         device=device,
         half=half,
+        task=task,
+        prompts=prompts,
+        topk=topk,
         models_dir=models_dir,
         allow_download=download_models,
     )
@@ -291,7 +299,12 @@ def detect_video(
         "imgsz": int(imgsz),
         "device": str(device),
         "half": bool(half),
+        "task": str(task),
     }
+    if prompts is not None:
+        det_cfg["prompts"] = prompts  # type: ignore
+    if topk is not None:
+        det_cfg["topk"] = int(topk)  # type: ignore
 
     # frames_dir in payload:
     # - if frames are saved, it's the actual path

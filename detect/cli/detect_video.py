@@ -24,12 +24,13 @@ Examples:
 
 import argparse
 import json
+from typing import Any, Dict, List, Optional
 from pathlib import Path
 
 from ..backends import available_detectors, available_models
 from ..core.artifacts import ArtifactOptions
 from ..core.run import detect_video
-from ..core.schema import parse_classes
+from ..core.schema import parse_classes, PromptSpec
 
 
 def _build_argparser() -> argparse.ArgumentParser:
@@ -42,6 +43,44 @@ def _build_argparser() -> argparse.ArgumentParser:
     ap.add_argument("--imgsz", type=int, default=640)
     ap.add_argument("--device", type=str, default="auto")
     ap.add_argument("--half", action="store_true")
+
+    # Task / prompt controls (optional; primarily for the unified 'ultralytics' detector)
+    ap.add_argument(
+        "--task",
+        type=str,
+        default="auto",
+        help="Task override for the unified detector: auto|detect|segment|pose|obb|classify|openvocab|sam|sam2|sam3|fastsam",
+    )
+    ap.add_argument(
+        "--prompts",
+        type=Path,
+        default=None,
+        help="Path to a JSON file containing prompt spec (text/points/boxes/topk).",
+    )
+    ap.add_argument(
+        "--text",
+        type=str,
+        default=None,
+        help="Open-vocabulary text prompt(s), comma/semicolon separated (e.g. 'person,car').",
+    )
+    ap.add_argument(
+        "--point",
+        action="append",
+        default=None,
+        help="Point prompt as 'x,y' or 'x,y,label' where label is 1 (fg) or 0 (bg). Repeatable.",
+    )
+    ap.add_argument(
+        "--box",
+        action="append",
+        default=None,
+        help="Box prompt as 'x1,y1,x2,y2'. Repeatable.",
+    )
+    ap.add_argument(
+        "--topk",
+        type=int,
+        default=None,
+        help="For classification: keep top-k probabilities (default 1).",
+    )
 
     # Artifact controls (opt-in)
     ap.add_argument("--json", action="store_true", help="Write detections.json into run dir")
@@ -56,6 +95,31 @@ def _build_argparser() -> argparse.ArgumentParser:
     ap.add_argument("--no-download", action="store_true", help="Disable automatic download of weights from registry URLs")
     ap.add_argument("--list-models", action="store_true", help="List registered and installed models, then exit")
     return ap
+
+
+def _parse_csv_floats(s: str) -> List[float]:
+    return [float(t.strip()) for t in s.replace(";", ",").split(",") if t.strip()]
+
+
+def _load_prompts(path: Optional[Path]) -> PromptSpec:
+    if path is None:
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            return data  # type: ignore
+    except Exception as e:
+        raise SystemExit(f"[error] Failed to read prompts JSON: {path}: {e}")
+    raise SystemExit(f"[error] Prompts file must be a JSON object: {path}")
+
+
+def _merge_prompts(base: PromptSpec, extra: PromptSpec) -> PromptSpec:
+    out: PromptSpec = dict(base)  # type: ignore
+    for k, v in extra.items():
+        if v is None:
+            continue
+        out[k] = v  # type: ignore
+    return out
 
 
 def run_cli() -> None:
@@ -75,6 +139,47 @@ def run_cli() -> None:
         ap.error("Missing required arguments: " + " ".join(missing))
 
     classes_list = parse_classes(args.classes) if args.classes is not None else None
+
+    # Build prompt spec from optional file + CLI flags
+    prompts: PromptSpec = _load_prompts(args.prompts)
+
+    cli_prompts: PromptSpec = {}
+
+    if args.text:
+        texts = [t.strip() for t in args.text.replace(";", ",").split(",") if t.strip()]
+        if texts:
+            cli_prompts["text"] = texts  # type: ignore
+
+    if args.point:
+        pts: List[List[float]] = []
+        for item in args.point:
+            vals = _parse_csv_floats(item)
+            if len(vals) == 2:
+                pts.append([vals[0], vals[1], 1.0])
+            elif len(vals) >= 3:
+                pts.append([vals[0], vals[1], float(int(vals[2]))])
+            else:
+                raise SystemExit(f"[error] Invalid --point '{item}'. Use 'x,y' or 'x,y,label'.")
+        if pts:
+            cli_prompts["points"] = pts  # type: ignore
+
+    if args.box:
+        boxes: List[List[float]] = []
+        for item in args.box:
+            vals = _parse_csv_floats(item)
+            if len(vals) != 4:
+                raise SystemExit(f"[error] Invalid --box '{item}'. Use 'x1,y1,x2,y2'.")
+            boxes.append([vals[0], vals[1], vals[2], vals[3]])
+        if boxes:
+            cli_prompts["boxes"] = boxes  # type: ignore
+
+    if args.topk is not None:
+        cli_prompts["topk"] = int(args.topk)  # type: ignore
+
+    prompts = _merge_prompts(prompts, cli_prompts)
+
+    # If prompts is empty, pass None downstream
+    prompts_arg = prompts if prompts else None
 
     artifacts = ArtifactOptions(
         save_json=bool(args.json),
@@ -96,6 +201,9 @@ def run_cli() -> None:
         imgsz=args.imgsz,
         device=args.device,
         half=args.half,
+        task=args.task,
+        prompts=prompts_arg,
+        topk=args.topk,
         models_dir=args.models_dir,
         download_models=not args.no_download,
         artifacts=artifacts,

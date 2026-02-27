@@ -6,39 +6,25 @@ detect.backends
 
 Backend/plugin registry.
 
-Today we ship an Ultralytics backend with three detectors:
-- yolo_bbox
-- yolo_pose
-- yolo_seg
+Today we ship an Ultralytics backend exposed primarily as a single detector:
+- ultralytics  (use `task=` to select detect/segment/pose/obb/classify/openvocab/sam...)
 
-This module provides:
-- register_detector() for future backends
-- create_detector() as the main factory
-- available_detectors() listing
-- available_models() combining registry + installed models
-
-Design notes:
-- Detector keys are currently simple (e.g. "yolo_bbox") for backward compatibility.
-- Internally, we store (backend, name) so we can support future keys like "onnxrt:foo".
+Backward-compatible aliases are also registered:
+- yolo_bbox, yolo_pose, yolo_seg
 """
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Tuple, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union
 
-from ..core.schema import BaseDetector
+from ..core.schema import BaseDetector, PromptSpec
 from ..registry.registry import (
     list_installed_models,
     list_registered_models,
     resolve_weights_path,
 )
 
-# Import and register built-in backend(s)
-from .ultralytics.detectors import (  # noqa: E402
-    YOLOBBoxDetector,
-    YOLOPoseDetector,
-    YOLOSegDetector,
-)
+from .ultralytics.detectors import UltralyticsDetector  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -46,19 +32,20 @@ class DetectorSpec:
     backend: str
     name: str
     cls: Type[BaseDetector]
+    init_kwargs: Dict[str, Any]
 
 
 # Keyed by detector "public name" (e.g. "yolo_bbox") -> spec
 _DETECTORS: Dict[str, DetectorSpec] = {}
 
 
-def register_detector(*, name: str, backend: str, cls: Type[BaseDetector]) -> None:
+def register_detector(*, name: str, backend: str, cls: Type[BaseDetector], init_kwargs: Optional[Dict[str, Any]] = None) -> None:
     key = (name or "").strip().lower()
     if not key:
         raise ValueError("Detector name must be non-empty.")
     if key in _DETECTORS:
         raise ValueError(f"Detector '{key}' already registered.")
-    _DETECTORS[key] = DetectorSpec(backend=backend, name=key, cls=cls)
+    _DETECTORS[key] = DetectorSpec(backend=backend, name=key, cls=cls, init_kwargs=dict(init_kwargs or {}))
 
 
 def available_detectors() -> List[str]:
@@ -93,6 +80,9 @@ def create_detector(
     imgsz: int = 640,
     device: str = "auto",
     half: bool = False,
+    task: str = "auto",
+    prompts: Optional[PromptSpec] = None,
+    topk: Optional[int] = None,
     models_dir: Union[str, Path] = "models",
     allow_download: bool = True,
 ) -> BaseDetector:
@@ -111,10 +101,27 @@ def create_detector(
     weights_path = resolve_weights_path(
         weights,
         models_dir=models_dir,
-        detector=key,
+        detector=None if key == "ultralytics" else key,
         backend=spec.backend,
         allow_download=allow_download,
     )
+
+    init_kwargs: Dict[str, Any] = dict(spec.init_kwargs)
+
+    # Only pass task/prompts/topk to detectors that support them; UltralyticsDetector does.
+    # IMPORTANT: preserve per-detector defaults (e.g. yolo_bbox -> detect) unless the caller
+    # explicitly overrides via a non-'auto' task.
+    if task is not None:
+        t = str(task).strip().lower()
+        if t and t != "auto":
+            init_kwargs["task"] = t
+
+    if prompts is not None:
+        init_kwargs["prompts"] = prompts
+
+    if topk is not None:
+        init_kwargs["topk"] = topk
+
     return spec.cls(
         weights=weights_path,
         conf=conf,
@@ -122,15 +129,20 @@ def create_detector(
         imgsz=imgsz,
         device=device,
         half=half,
+        **init_kwargs,
     )
 
 
 # -------------------------
 # Built-in detector wiring
 # -------------------------
-register_detector(name="yolo_bbox", backend="ultralytics", cls=YOLOBBoxDetector)
-register_detector(name="yolo_pose", backend="ultralytics", cls=YOLOPoseDetector)
-register_detector(name="yolo_seg", backend="ultralytics", cls=YOLOSegDetector)
+# Primary organized entrypoint
+register_detector(name="ultralytics", backend="ultralytics", cls=UltralyticsDetector, init_kwargs={"task": "auto"})
+
+# Backward-compatible aliases
+register_detector(name="yolo_bbox", backend="ultralytics", cls=UltralyticsDetector, init_kwargs={"task": "detect"})
+register_detector(name="yolo_pose", backend="ultralytics", cls=UltralyticsDetector, init_kwargs={"task": "pose"})
+register_detector(name="yolo_seg", backend="ultralytics", cls=UltralyticsDetector, init_kwargs={"task": "segment"})
 
 
 __all__ = [

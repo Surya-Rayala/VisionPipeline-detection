@@ -12,9 +12,8 @@ detect/
     __init__.py        # plugin registry
     ultralytics/
       __init__.py
-      detectors.py     # bbox/pose/seg wrappers
+      detectors.py     # ultralytics wrappers
       export.py        # ultralytics exporter adapter
-      registry.json    # ultralytics-specific model keys (optional)
   registry/
     registry.py        # merge registries + resolve_weights_path
     default.json       # your current registry (or split by backend)

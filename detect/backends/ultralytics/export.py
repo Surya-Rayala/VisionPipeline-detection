@@ -16,7 +16,7 @@ References:
 import json
 import shutil
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 from ...registry.registry import resolve_weights_path, list_registered_models, list_installed_models
 
@@ -30,8 +30,112 @@ except Exception as e:  # pragma: no cover
 SUPPORTED_FORMATS = {
     "torchscript", "onnx", "engine", "openvino", "coreml",
     "saved_model", "tflite", "edgetpu", "tfjs", "paddle",
-    "mnn", "ncnn", "imx", "rknn",
+    "mnn", "ncnn", "imx", "rknn", "pb",
 }
+
+# -----------------------------
+# Export capability heuristics
+# -----------------------------
+
+# Some Ultralytics model families have export limitations (or no export at all).
+# We keep this conservative and user-friendly: if we detect an incompatible model,
+# we show a warning and exit with a compatible list.
+
+# YOLOv10 has a narrower supported export format set (per Ultralytics docs).
+_YOLOV10_EXPORT_FORMATS: Set[str] = {
+    "torchscript",
+    "onnx",
+    "openvino",
+    "engine",
+    "coreml",
+    "saved_model",
+    "pb",
+    "tflite",
+    "edgetpu",
+    "tfjs",
+    "paddle",
+}
+
+
+def _infer_family(stem: str) -> str:
+    s = stem.lower()
+    if "world" in s:
+        return "yolo_world"
+    if "yoloe" in s:
+        return "yoloe"
+    if "sam2" in s or s.startswith("sam2"):
+        return "sam2"
+    if "sam3" in s or s.startswith("sam3"):
+        return "sam3"
+    if "sam" in s:
+        # includes sam_b/sam_l/mobile_sam
+        return "sam"
+    if "fastsam" in s:
+        return "fastsam"
+    if "rtdetr" in s:
+        return "rtdetr"
+    if "yolov10" in s or s.startswith("yolov10"):
+        return "yolov10"
+    if "yolo_nas" in s or "yolonas" in s or "yolo-nas" in s:
+        return "yolo_nas"
+    if s.startswith("yolo") or "yolov" in s:
+        return "yolo"
+    return "unknown"
+
+
+def _is_export_supported(stem: str) -> bool:
+    s = stem.lower()
+
+    # MobileSAM is inference-only in Ultralytics docs.
+    if "mobile_sam" in s or "mobile-sam" in s:
+        return False
+
+    # SAM and SAM2 family models are inference-only in Ultralytics docs (Export ❌).
+    # This includes sam_b/sam_l, sam2_*, sam2.* (sam2.1_*).
+    if s.startswith("sam") or "sam2" in s or "sam3" in s:
+        # Be conservative: block all SAM-family exports unless Ultralytics explicitly supports it.
+        return False
+
+    # YOLO-World v1 weights (e.g., yolov8s-world.pt) do not support export in Ultralytics docs.
+    # v2 weights are typically named *-worldv2.pt.
+    if "world" in s and "worldv2" not in s:
+        return False
+
+    return True
+
+
+def _allowed_formats_for(stem: str) -> Optional[Set[str]]:
+    """Return allowed formats for a given model stem, or None for default (no extra restriction)."""
+    s = stem.lower()
+    if "yolov10" in s or s.startswith("yolov10"):
+        return set(_YOLOV10_EXPORT_FORMATS)
+    return None
+
+
+def _validate_export_capabilities(*, stem: str, formats_list: List[str]) -> None:
+    if not _is_export_supported(stem):
+        fam = _infer_family(stem)
+        hint = ""
+        if fam in {"sam", "sam2", "sam3"}:
+            hint = "       Note: Ultralytics SAM/SAM2 model pages mark Export as unsupported (❌).\n"
+        msg = (
+            f"[warn] Export is not supported for this model family (detected: {fam}).\n"
+            f"       Weights: {stem}\n"
+            f"{hint}"
+            "       Please choose an export-compatible model (e.g., YOLO-World v2 uses '*-worldv2.pt')."
+        )
+        raise SystemExit(msg)
+
+    allowed = _allowed_formats_for(stem)
+    if allowed is not None:
+        bad = [f for f in formats_list if f not in allowed]
+        if bad:
+            msg = (
+                f"[warn] Export format(s) not supported for this model (detected: {_infer_family(stem)}).\n"
+                f"       Unsupported: {', '.join(bad)}\n"
+                f"       Supported: {', '.join(sorted(allowed))}"
+            )
+            raise SystemExit(msg)
 
 
 def _norm_formats(s: Union[str, List[str]]) -> List[str]:
@@ -107,13 +211,18 @@ def export_model_ultralytics(
         if f not in SUPPORTED_FORMATS:
             raise ValueError(f"Unsupported format '{f}'. Supported: {', '.join(sorted(SUPPORTED_FORMATS))}")
 
+    # Capability checks (warn + exit for known-incompatible models/formats)
+    # We evaluate after resolving weights so we can use the concrete filename.
+
     # Resolve weights (path/URL/registry key)
     weights_path = resolve_weights_path(
         weights, models_dir=models_dir, detector=None, backend="ultralytics", allow_download=download_models
     )
 
-    # Derive run dir
     stem = Path(weights_path).stem
+    _validate_export_capabilities(stem=stem, formats_list=formats_list)
+
+    # Derive run dir
     if run_name is None or not run_name:
         run_name = f"{stem}_export"
     run_dir = Path(out_dir) / run_name

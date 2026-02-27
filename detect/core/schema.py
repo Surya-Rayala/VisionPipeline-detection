@@ -16,7 +16,7 @@ Notes:
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List, Optional, Tuple, TypedDict, Union
+from typing import Dict, List, Optional, Tuple, TypedDict, Union
 
 import numpy as np
 
@@ -46,6 +46,10 @@ class Detection(TypedDict, total=False):
       - class_name: str
       - keypoints: List[List[float]]  # per keypoint: [x, y, score]
       - segments: List[List[List[float]]]  # list of polygons; each polygon: [[x,y], ...]
+      - obb: List[float]  # oriented box as [cx, cy, w, h, angle_degrees] (optional)
+      - probs: List[float]  # optional per-class probabilities (e.g., classification)
+      - logits: List[float]  # optional per-class logits (e.g., classification)
+      - text_prompt: str  # optional text prompt used for open-vocabulary models
     """
 
     bbox: List[float]
@@ -55,6 +59,10 @@ class Detection(TypedDict, total=False):
     class_name: Optional[str]
     keypoints: Optional[List[List[float]]]
     segments: Optional[List[List[List[float]]]]
+    obb: Optional[List[float]]
+    probs: Optional[List[float]]
+    logits: Optional[List[float]]
+    text_prompt: Optional[str]
 
 
 class FrameRecord(TypedDict):
@@ -78,11 +86,36 @@ class DetectorConfig(TypedDict, total=False):
     backend: str                 # e.g. "ultralytics" (optional but recommended)
     weights: str                 # resolved weights path or identifier
     model_key: str               # registry key, if used (optional)
+    task: str                    # e.g. "auto", "detect", "segment", "pose", "obb", "classify", "openvocab", "sam"
+    model_family: str            # e.g. "yolo", "rtdetr", "yolo_world", "yoloe", "sam2", ...
+    prompts: Dict[str, object]   # optional prompt spec (SAM/FastSAM/YOLO-World/YOLOE), JSON-serializable
     classes: Optional[List[int]]
     conf_thresh: float
     imgsz: int
     device: str
     half: bool
+
+
+# ---------------------------
+# Prompt specification
+# ---------------------------
+
+class PromptSpec(TypedDict, total=False):
+    """Prompt specification for promptable/open-vocabulary models.
+
+    All fields are optional. When provided via CLI, these are typically applied to all frames.
+
+    Fields:
+      - text: list of strings (e.g. ["person", "car"]) for open-vocabulary detection/seg.
+      - points: list of [x, y, label] where label is 1 (foreground) or 0 (background).
+      - boxes: list of [x1, y1, x2, y2].
+      - topk: int for classification (how many top classes to keep).
+    """
+
+    text: Optional[List[str]]
+    points: Optional[List[List[float]]]
+    boxes: Optional[List[List[float]]]
+    topk: Optional[int]
 
 
 # ---------------------------
@@ -208,6 +241,7 @@ __all__ = [
     "FrameRecord",
     "VideoMeta",
     "DetectorConfig",
+    "PromptSpec",
     "BaseDetector",
     "select_device",
     "parse_classes",

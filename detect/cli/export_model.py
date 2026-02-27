@@ -17,6 +17,7 @@ Example:
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Tuple, Union
 
@@ -70,26 +71,35 @@ def run_cli() -> None:
     if args.weights is None:
         ap.error("Missing required argument: --weights")
 
-    res = export_model_ultralytics(
-        weights=args.weights,
-        formats=args.formats,
-        imgsz=_parse_imgsz(args.imgsz),
-        device=args.device,
-        half=args.half,
-        int8=args.int8,
-        data=args.data,
-        fraction=args.fraction,
-        dynamic=args.dynamic,
-        batch=args.batch,
-        opset=args.opset,
-        simplify=args.simplify,
-        workspace=args.workspace,
-        nms=args.nms,
-        out_dir=args.out_dir,
-        run_name=args.run_name,
-        models_dir=args.models_dir,
-        download_models=not args.no_download,
-    )
+    try:
+        res = export_model_ultralytics(
+            weights=args.weights,
+            formats=args.formats,
+            imgsz=_parse_imgsz(args.imgsz),
+            device=args.device,
+            half=args.half,
+            int8=args.int8,
+            data=args.data,
+            fraction=args.fraction,
+            dynamic=args.dynamic,
+            batch=args.batch,
+            opset=args.opset,
+            simplify=args.simplify,
+            workspace=args.workspace,
+            nms=args.nms,
+            out_dir=args.out_dir,
+            run_name=args.run_name,
+            models_dir=args.models_dir,
+            download_models=not args.no_download,
+        )
+    except SystemExit as e:
+        # export.py uses SystemExit for user-facing capability errors
+        msg = str(e)
+        if msg:
+            print(msg, file=sys.stderr)
+        code = e.code if isinstance(e.code, int) else 2
+        raise SystemExit(code)
+
     print(json.dumps(res, indent=2))
 
 

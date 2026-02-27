@@ -91,5 +91,62 @@
 
   "yolov3u": { "url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov3u.pt", "filename": "yolov3u.pt", "detector": "yolo_bbox" },
   "yolov3-tinyu": { "url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov3-tinyu.pt", "filename": "yolov3-tinyu.pt", "detector": "yolo_bbox" },
-  "yolov3-sppu": { "url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov3-sppu.pt", "filename": "yolov3-sppu.pt", "detector": "yolo_bbox" }
+  "yolov3-sppu": { "url": "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov3-sppu.pt", "filename": "yolov3-sppu.pt", "detector": "yolo_bbox" },
+
+
+  "rtdetr-l": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/rtdetr-l.pt", "filename": "rtdetr-l.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "rtdetr-x": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/rtdetr-x.pt", "filename": "rtdetr-x.pt", "detector": "ultralytics", "backend": "ultralytics" },
+
+  "yolo_nas_s": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo_nas_s.pt", "filename": "yolo_nas_s.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yolo_nas_m": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo_nas_m.pt", "filename": "yolo_nas_m.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yolo_nas_l": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo_nas_l.pt", "filename": "yolo_nas_l.pt", "detector": "ultralytics", "backend": "ultralytics" },
+
+  "yolov8s-world": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8s-world.pt", "filename": "yolov8s-world.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yolov8m-world": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8m-world.pt", "filename": "yolov8m-world.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yolov8l-world": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8l-world.pt", "filename": "yolov8l-world.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yolov8x-world": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8x-world.pt", "filename": "yolov8x-world.pt", "detector": "ultralytics", "backend": "ultralytics" },
+
+  "yolov8s-worldv2": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8s-worldv2.pt", "filename": "yolov8s-worldv2.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yolov8m-worldv2": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8m-worldv2.pt", "filename": "yolov8m-worldv2.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yolov8l-worldv2": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8l-worldv2.pt", "filename": "yolov8l-worldv2.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yolov8x-worldv2": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8x-worldv2.pt", "filename": "yolov8x-worldv2.pt", "detector": "ultralytics", "backend": "ultralytics" },
+
+  "sam_b": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/sam_b.pt", "filename": "sam_b.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "sam_l": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/sam_l.pt", "filename": "sam_l.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "mobile_sam": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/mobile_sam.pt", "filename": "mobile_sam.pt", "detector": "ultralytics", "backend": "ultralytics" },
+
+  "sam2_t": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/sam2_t.pt", "filename": "sam2_t.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "sam2_s": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/sam2_s.pt", "filename": "sam2_s.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "sam2_b": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/sam2_b.pt", "filename": "sam2_b.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "sam2_l": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/sam2_l.pt", "filename": "sam2_l.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "sam2.1_b": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/sam2.1_b.pt", "filename": "sam2.1_b.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "sam2.1_t": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/sam2.1_t.pt", "filename": "sam2.1_t.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "sam2.1_s": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/sam2.1_s.pt", "filename": "sam2.1_s.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "sam2.1_l": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/sam2.1_l.pt", "filename": "sam2.1_l.pt", "detector": "ultralytics", "backend": "ultralytics" },
+
+  "FastSAM-s": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/FastSAM-s.pt", "filename": "FastSAM-s.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "FastSAM-x": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/FastSAM-x.pt", "filename": "FastSAM-x.pt", "detector": "ultralytics", "backend": "ultralytics" },
+
+  "yoloe-11s-seg": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-11s-seg.pt", "filename": "yoloe-11s-seg.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-11m-seg": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-11m-seg.pt", "filename": "yoloe-11m-seg.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-11l-seg": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-11l-seg.pt", "filename": "yoloe-11l-seg.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-v8s-seg": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-v8s-seg.pt", "filename": "yoloe-v8s-seg.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-v8m-seg": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-v8m-seg.pt", "filename": "yoloe-v8m-seg.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-v8l-seg": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-v8l-seg.pt", "filename": "yoloe-v8l-seg.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-26n-seg": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-26n-seg.pt", "filename": "yoloe-26n-seg.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-26s-seg": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-26s-seg.pt", "filename": "yoloe-26s-seg.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-26m-seg": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-26m-seg.pt", "filename": "yoloe-26m-seg.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-26l-seg": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-26l-seg.pt", "filename": "yoloe-26l-seg.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-26x-seg": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-26x-seg.pt", "filename": "yoloe-26x-seg.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-11s-seg-pf": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-11s-seg-pf.pt", "filename": "yoloe-11s-seg-pf.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-11m-seg-pf": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-11m-seg-pf.pt", "filename": "yoloe-11m-seg-pf.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-11l-seg-pf": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-11l-seg-pf.pt", "filename": "yoloe-11l-seg-pf.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-v8s-seg-pf": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-v8s-seg-pf.pt", "filename": "yoloe-v8s-seg-pf.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-v8m-seg-pf": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-v8m-seg-pf.pt", "filename": "yoloe-v8m-seg-pf.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-v8l-seg-pf": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-v8l-seg-pf.pt", "filename": "yoloe-v8l-seg-pf.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-26n-seg-pf": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-26n-seg-pf.pt", "filename": "yoloe-26n-seg-pf.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-26s-seg-pf": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-26s-seg-pf.pt", "filename": "yoloe-26s-seg-pf.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-26m-seg-pf": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-26m-seg-pf.pt", "filename": "yoloe-26m-seg-pf.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-26l-seg-pf": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-26l-seg-pf.pt", "filename": "yoloe-26l-seg-pf.pt", "detector": "ultralytics", "backend": "ultralytics" },
+  "yoloe-26x-seg-pf": { "url": "https://github.com/ultralytics/assets/releases/download/v8.4.0/yoloe-26x-seg-pf.pt", "filename": "yoloe-26x-seg-pf.pt", "detector": "ultralytics", "backend": "ultralytics" }
 }
